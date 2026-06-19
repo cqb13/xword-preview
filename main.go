@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/cqb13/puz-parser/puz"
 	rlgui "github.com/gen2brain/raylib-go/raygui"
@@ -112,15 +113,19 @@ func main() {
 		rl.EndScissorMode()
 
 		// Draw board
-
 		x := startBoardDrawX
 		y := PADDING
 
-		// so the edge thickness is the same as lines inside the grid
-		rl.DrawRectangleLinesEx(rl.NewRectangle(startBoardDrawX, PADDING, float32(cellDim*puzzle.Board.Width()), float32(cellDim*puzzle.Board.Height())), 2, rl.Black)
+		letterFontSize := cellDim / 2
+		numberFontSize := cellDim / 4
 
-		for _, row := range puzzle.Board {
-			for _, cell := range row {
+		nextNum := 1
+
+		// so the edge thickness is the same as lines inside the grid
+		rl.DrawRectangleLinesEx(rl.NewRectangle(startBoardDrawX, PADDING, float32(cellDim*puzzle.Board.Width()+1), float32(cellDim*puzzle.Board.Height())+1), 2, rl.Black)
+
+		for cy, row := range puzzle.Board {
+			for cx, cell := range row {
 				if cell.Value == puz.DIAGRAMLESS_SOLID_SQUARE {
 					x += float32(cellDim)
 					continue
@@ -133,6 +138,16 @@ func main() {
 				}
 
 				rl.DrawRectangleLines(int32(x), int32(y), int32(cellDim), int32(cellDim), rl.Black)
+
+				w := rl.MeasureText(string(cell.Value), int32(letterFontSize))
+
+				rl.DrawText(string(cell.Value), int32(x)+int32(cellDim/2)-w/2, int32(y)+int32(letterFontSize)/2, int32(letterFontSize), rl.Black)
+
+				if puzzle.Board.StartsAcrossWord(cx, cy) || puzzle.Board.StartsDownWord(cx, cy) {
+					rl.DrawText(strconv.Itoa(nextNum), int32(x+3), int32(y+3), int32(numberFontSize), rl.Gray)
+					nextNum++
+				}
+
 				x += float32(cellDim)
 			}
 			x = startBoardDrawX
