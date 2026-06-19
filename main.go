@@ -31,21 +31,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	rl.SetConfigFlags(rl.FlagWindowResizable)
-	rl.InitWindow(600, 600, fmt.Sprintf("%s | %s", puzzle.Title, puzzle.Author))
+	// rl.SetConfigFlags(rl.FlagWindowResizable)
+	rl.SetTraceLogLevel(rl.LogNone)
+	rl.SetTargetFPS(60)
+	rl.InitWindow(1440, 810, fmt.Sprintf("%s | %s", puzzle.Title, puzzle.Author))
 	defer rl.CloseWindow()
 
 	halfHeight := float32(rl.GetScreenHeight() / 2)
 	thirdWidth := float32(rl.GetScreenWidth() / 3)
 
+	downClues := puzzle.GetCluesByDirection(puz.Down)
+	acrossClues := puzzle.GetCluesByDirection(puz.Across)
+
 	var (
 		downCluesPanelRec        = rl.NewRectangle(PADDING, PADDING, thirdWidth, halfHeight)
-		downCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight()))
+		downCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetMonitorWidth(0)), float32(FONT_SIZE*len(downClues)))
 		downCluesPanelView       = rl.NewRectangle(0, 0, 0, 0)
 		downViewPanelScroll      = rl.NewVector2(99, 0)
 
 		acrossCluesPanelRec        = rl.NewRectangle(PADDING, PADDING, thirdWidth, halfHeight)
-		acrossCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight()))
+		acrossCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetMonitorWidth(0)), float32(FONT_SIZE*len(acrossClues)))
 		acrossCluesPanelView       = rl.NewRectangle(0, 0, 0, 0)
 		acrossViewPanelScroll      = rl.NewVector2(99, 0)
 	)
@@ -55,10 +60,8 @@ func main() {
 		thirdWidth := float32(rl.GetScreenWidth() / 3)
 
 		downCluesPanelRec = rl.NewRectangle(PADDING, PADDING, thirdWidth, halfHeight-PADDING*2)
-		downCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight()))
 
 		acrossCluesPanelRec = rl.NewRectangle(PADDING, halfHeight, thirdWidth, halfHeight-PADDING)
-		acrossCluesPanelContentRec = rl.NewRectangle(PADDING, PADDING, float32(rl.GetScreenWidth()), float32(rl.GetScreenHeight()))
 
 		rl.BeginDrawing()
 
@@ -69,7 +72,7 @@ func main() {
 		rl.BeginScissorMode(int32(downCluesPanelView.X), int32(downCluesPanelView.Y), int32(downCluesPanelView.Width), int32(downCluesPanelView.Height))
 
 		height := int32(0)
-		for _, clue := range puzzle.GetCluesByDirection(puz.Down) {
+		for _, clue := range downClues {
 			text := fmt.Sprintf("%d. %s", clue.Num, clue.Clue)
 
 			width := rl.MeasureText(text, FONT_SIZE)
@@ -87,7 +90,7 @@ func main() {
 		rl.BeginScissorMode(int32(acrossCluesPanelView.X), int32(acrossCluesPanelView.Y), int32(acrossCluesPanelView.Width), int32(acrossCluesPanelView.Height))
 
 		height = int32(0)
-		for _, clue := range puzzle.GetCluesByDirection(puz.Across) {
+		for _, clue := range acrossClues {
 			text := fmt.Sprintf("%d. %s", clue.Num, clue.Clue)
 
 			width := rl.MeasureText(text, FONT_SIZE)
