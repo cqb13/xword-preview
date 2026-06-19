@@ -31,7 +31,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// rl.SetConfigFlags(rl.FlagWindowResizable)
+	rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.SetTraceLogLevel(rl.LogNone)
 	rl.SetTargetFPS(60)
 	rl.InitWindow(1440, 810, fmt.Sprintf("%s | %s", puzzle.Title, puzzle.Author))
@@ -39,6 +39,10 @@ func main() {
 
 	halfHeight := float32(rl.GetScreenHeight() / 2)
 	thirdWidth := float32(rl.GetScreenWidth() / 3)
+	startBoardDrawX := thirdWidth + PADDING
+
+	widthForBoard := rl.GetScreenWidth() - int(startBoardDrawX)
+	cellDim := min(widthForBoard, rl.GetScreenHeight()) / max(puzzle.Board.Width(), puzzle.Board.Height())
 
 	downClues := puzzle.GetCluesByDirection(puz.Down)
 	acrossClues := puzzle.GetCluesByDirection(puz.Across)
@@ -57,7 +61,11 @@ func main() {
 
 	for !rl.WindowShouldClose() {
 		halfHeight = float32(rl.GetScreenHeight() / 2)
-		thirdWidth := float32(rl.GetScreenWidth() / 3)
+		thirdWidth = float32(rl.GetScreenWidth() / 3)
+		startBoardDrawX = thirdWidth + PADDING*2
+
+		widthForBoard = rl.GetScreenWidth() - int(startBoardDrawX)
+		cellDim = min(widthForBoard, rl.GetScreenHeight()-PADDING*2) / max(puzzle.Board.Width(), puzzle.Board.Height())
 
 		downCluesPanelRec = rl.NewRectangle(PADDING, PADDING, thirdWidth, halfHeight-PADDING*2)
 
@@ -102,6 +110,34 @@ func main() {
 		}
 
 		rl.EndScissorMode()
+
+		// Draw board
+
+		x := startBoardDrawX
+		y := PADDING
+
+		// so the edge thickness is the same as lines inside the grid
+		rl.DrawRectangleLinesEx(rl.NewRectangle(startBoardDrawX, PADDING, float32(cellDim*puzzle.Board.Width()), float32(cellDim*puzzle.Board.Height())), 2, rl.Black)
+
+		for _, row := range puzzle.Board {
+			for _, cell := range row {
+				if cell.Value == puz.DIAGRAMLESS_SOLID_SQUARE {
+					x += float32(cellDim)
+					continue
+				}
+
+				if cell.Value == puz.SOLID_SQUARE {
+					rl.DrawRectangle(int32(x), int32(y), int32(cellDim), int32(cellDim), rl.Black)
+					x += float32(cellDim)
+					continue
+				}
+
+				rl.DrawRectangleLines(int32(x), int32(y), int32(cellDim), int32(cellDim), rl.Black)
+				x += float32(cellDim)
+			}
+			x = startBoardDrawX
+			y += cellDim
+		}
 
 		rl.EndDrawing()
 	}
