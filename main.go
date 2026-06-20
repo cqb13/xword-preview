@@ -36,6 +36,7 @@ func main() {
 	rl.SetTraceLogLevel(rl.LogNone)
 	rl.SetTargetFPS(60)
 	rl.InitWindow(1440, 810, fmt.Sprintf("%s | %s", puzzle.Title, puzzle.Author))
+	rl.SetWindowMinSize(720, 405)
 	defer rl.CloseWindow()
 
 	halfHeight := float32(rl.GetScreenHeight() / 2)
@@ -80,17 +81,20 @@ func main() {
 		rlgui.ScrollPanel(downCluesPanelRec, "Down", downCluesPanelContentRec, &downViewPanelScroll, &downCluesPanelView)
 		rl.BeginScissorMode(int32(downCluesPanelView.X), int32(downCluesPanelView.Y), int32(downCluesPanelView.Width), int32(downCluesPanelView.Height))
 
+		maxWidth := int32(0)
 		height := int32(0)
 		for _, clue := range downClues {
 			text := fmt.Sprintf("%d. %s", clue.Num, clue.Clue)
 
 			width := rl.MeasureText(text, FONT_SIZE)
+			maxWidth = max(width, maxWidth)
 
 			_ = width
 
 			rl.DrawText(text, int32(downCluesPanelView.X+downViewPanelScroll.X), int32(downCluesPanelView.Y+downViewPanelScroll.Y)+height, FONT_SIZE, rl.Black)
 			height += FONT_SIZE
 		}
+		downCluesPanelContentRec.Width = float32(maxWidth)
 
 		rl.EndScissorMode()
 
@@ -98,17 +102,21 @@ func main() {
 		rlgui.ScrollPanel(acrossCluesPanelRec, "Across", acrossCluesPanelContentRec, &acrossViewPanelScroll, &acrossCluesPanelView)
 		rl.BeginScissorMode(int32(acrossCluesPanelView.X), int32(acrossCluesPanelView.Y), int32(acrossCluesPanelView.Width), int32(acrossCluesPanelView.Height))
 
+		maxWidth = 0
 		height = int32(0)
 		for _, clue := range acrossClues {
 			text := fmt.Sprintf("%d. %s", clue.Num, clue.Clue)
 
 			width := rl.MeasureText(text, FONT_SIZE)
+			maxWidth = max(width, maxWidth)
 
 			_ = width
 
 			rl.DrawText(text, int32(acrossCluesPanelView.X+acrossViewPanelScroll.X), int32(acrossCluesPanelView.Y+acrossViewPanelScroll.Y)+height, FONT_SIZE, rl.Black)
 			height += FONT_SIZE
 		}
+
+		acrossCluesPanelContentRec.Width = float32(maxWidth)
 
 		rl.EndScissorMode()
 
