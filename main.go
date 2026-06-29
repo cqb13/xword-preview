@@ -94,7 +94,7 @@ func main() {
 			rl.DrawText(text, int32(downCluesPanelView.X+downViewPanelScroll.X), int32(downCluesPanelView.Y+downViewPanelScroll.Y)+height, FONT_SIZE, rl.Black)
 			height += FONT_SIZE
 		}
-		downCluesPanelContentRec.Width = float32(maxWidth)
+		downCluesPanelContentRec.Width = float32(maxWidth + PADDING)
 
 		rl.EndScissorMode()
 
@@ -116,7 +116,7 @@ func main() {
 			height += FONT_SIZE
 		}
 
-		acrossCluesPanelContentRec.Width = float32(maxWidth)
+		acrossCluesPanelContentRec.Width = float32(maxWidth + PADDING)
 
 		rl.EndScissorMode()
 
