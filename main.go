@@ -67,7 +67,7 @@ func main() {
 		startBoardDrawX = thirdWidth + PADDING*2
 
 		widthForBoard = rl.GetScreenWidth() - int(startBoardDrawX)
-		cellDim = min(widthForBoard, rl.GetScreenHeight()-PADDING*2) / max(puzzle.Board.Width(), puzzle.Board.Height())
+		cellDim = min(widthForBoard-PADDING, rl.GetScreenHeight()-PADDING*2) / max(puzzle.Board.Width(), puzzle.Board.Height())
 
 		downCluesPanelRec = rl.NewRectangle(PADDING, PADDING, thirdWidth, halfHeight-PADDING*2)
 
